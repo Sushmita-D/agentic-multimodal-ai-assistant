@@ -32,3 +32,8 @@ generated/*
 # OS
 .DS_Store
 Thumbs.db
+Backend/uploads/*
+!Backend/uploads/.gitkeep
+
+Backend/generated/*
+!Backend/generated/.gitkeep
