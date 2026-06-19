@@ -1,5 +1,7 @@
-from ingestion.audio_processor import extract_audio_text
+from ingestion.video_processor import extract_video_text
 
-text = extract_audio_text("uploads/mp.ogg")
+text = extract_video_text(
+    "uploads/video.mkv"
+)
 
 print(text)
