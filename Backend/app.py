@@ -8,6 +8,7 @@ from agents.qa_agent import answer_question
 from agents.summary_agent import summarize_document
 from agents.quiz_agent import generate_quiz
 from graph.workflow import graph
+from ingestion.audio_processor import extract_audio_text
 from document_store import (
     create_document,
     save_chunk,
@@ -38,7 +39,18 @@ async def upload_pdf(file: UploadFile = File(...)):
         "pdf"
     )
 
-    document_text = extract_text(file_path)
+    extension = os.path.splitext(file.filename)[1].lower()
+
+    if extension == ".pdf":
+        document_text = extract_text(file_path)
+
+    elif extension in [".mp3", ".wav", ".ogg", ".m4a"]:
+        document_text = extract_audio_text(file_path)
+
+    else:
+        return {
+        "error": "Unsupported file type"
+    }
 
     document_chunks = chunk_text(document_text)
 
@@ -62,9 +74,10 @@ async def upload_pdf(file: UploadFile = File(...)):
     print("LENGTH =", len(document_text))
 
     return {
-        "message": "PDF uploaded successfully",
+        "message": "File uploaded successfully",
         "document_id": document_id,
         "filename": file.filename,
+        "file_type": extension,
         "characters": len(document_text),
         "chunks": len(document_chunks)
     }
