@@ -1,20 +1,98 @@
-from database import conn, cursor
-import json
+import psycopg2
+from database import get_connection
+import numpy as np
 
-def save_chunk(filename, chunk_number, chunk_text, embedding):
+
+def create_document(filename, file_type):
+    """
+    Creates a new document entry and returns its ID.
+    """
+
+    conn = get_connection()
+    cursor = conn.cursor()
 
     cursor.execute(
         """
-        INSERT INTO documents
-        (filename, chunk_number, chunk_text, embedding)
-        VALUES (%s,%s,%s,%s)
+        INSERT INTO documents (filename, file_type)
+        VALUES (%s, %s)
+        RETURNING id;
         """,
+        (filename, file_type)
+    )
+
+    document_id = cursor.fetchone()[0]
+
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+
+    return document_id
+
+
+def save_chunk(document_id, chunk_number, chunk_text, embedding):
+    """
+    Saves a chunk belonging to a document.
+    """
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        INSERT INTO document_chunks
         (
-            filename,
+            document_id,
             chunk_number,
             chunk_text,
-            json.dumps(embedding.tolist())
+            embedding
+        )
+        VALUES (%s, %s, %s, %s)
+        """,
+        (
+            document_id,
+            chunk_number,
+            chunk_text,
+            embedding.tolist()
         )
     )
 
     conn.commit()
+
+    cursor.close()
+    conn.close()
+
+
+def get_document_chunks(document_id):
+    """
+    Loads all chunks and embeddings for a document.
+    """
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+            chunk_text,
+            embedding
+        FROM document_chunks
+        WHERE document_id = %s
+        ORDER BY chunk_number;
+        """,
+        (document_id,)
+    )
+
+    rows = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    chunks = []
+    embeddings = []
+
+    for row in rows:
+        chunks.append(row[0])
+        embeddings.append(row[1])
+
+    return chunks, np.array(embeddings)

@@ -11,7 +11,6 @@ from agents.quiz_agent import generate_quiz
 class AgentState(TypedDict):
     question: str
     task: str
-    document_text: str
     document_chunks: List[str]
     document_embeddings: Any
     result: str
@@ -53,8 +52,10 @@ def qa_node(state: AgentState):
 
 def summary_node(state: AgentState):
 
+    document_text = "\n\n".join(state["document_chunks"])
+
     summary = summarize_document(
-        state["document_text"]
+        document_text
     )
 
     state["result"] = summary
@@ -68,9 +69,11 @@ def summary_node(state: AgentState):
 
 def quiz_node(state: AgentState):
 
+    document_text = "\n\n".join(state["document_chunks"])
+
     quiz = generate_quiz(
-        state["document_text"]
-    )
+        document_text
+)
 
     state["result"] = quiz
 
