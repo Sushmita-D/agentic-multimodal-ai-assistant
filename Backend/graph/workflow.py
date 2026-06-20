@@ -7,6 +7,7 @@ from agents.qa_agent import answer_question
 from agents.summary_agent import summarize_document
 from agents.quiz_agent import generate_quiz
 from agents.notes_agent import generate_notes
+from agents.flashcard_agent import generate_flashcards
 
 
 class AgentState(TypedDict):
@@ -96,6 +97,22 @@ def notes_node(state: AgentState):
 
     return state
 
+# -------------------------
+# flashcards Agent
+# -------------------------
+
+def flashcard_node(state: AgentState):
+
+    document_text = "\n\n".join(state["document_chunks"])
+
+    flashcards = generate_flashcards(
+        document_text
+    )
+
+    state["result"] = flashcards
+
+    return state
+
 
 # -------------------------
 # Build Graph
@@ -108,7 +125,7 @@ builder.add_node("qa", qa_node)
 builder.add_node("summary", summary_node)
 builder.add_node("quiz", quiz_node)
 builder.add_node("notes", notes_node)
-
+builder.add_node("flashcards", flashcard_node)
 builder.set_entry_point("router")
 
 builder.add_conditional_edges(
@@ -118,7 +135,8 @@ builder.add_conditional_edges(
         "qa": "qa",
         "summary": "summary",
         "quiz": "quiz",
-        "notes": "notes"
+        "notes": "notes",
+        "flashcards": "flashcards"
     }
 )
 
@@ -126,5 +144,5 @@ builder.add_edge("qa", END)
 builder.add_edge("summary", END)
 builder.add_edge("quiz", END)
 builder.add_edge("notes", END)
-
+builder.add_edge("flashcards", END)
 graph = builder.compile()

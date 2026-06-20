@@ -1,10 +1,16 @@
-from llm.providers.openai import OpenAIProvider
+from generators.documents.pdf_generator import generate_pdf
 
-provider = OpenAIProvider()
+generate_pdf(
+    "Python Notes",
+    """
+Python is a programming language.
 
-answer = provider.generate(
-    "Python is a programming language.",
-    "What is Python?"
+It is used for AI.
+
+It supports OOP.
+
+It is easy to learn.
+"""
 )
 
-print(answer)
+print("PDF Created Successfully")

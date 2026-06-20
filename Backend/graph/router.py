@@ -12,6 +12,7 @@ qa
 summary
 quiz
 notes
+flashcards
 
 Rules:
 
@@ -31,6 +32,11 @@ study notes,
 make notes,
 prepare notes -> notes
 
+If user asks to generate flashcards,
+study cards,
+revision cards,
+Q&A cards -> flashcards
+
 Reply ONLY with
 
 qa
@@ -46,6 +52,10 @@ quiz
 or
 
 notes  
+
+or 
+
+flashcards
 
 User Request:
 
