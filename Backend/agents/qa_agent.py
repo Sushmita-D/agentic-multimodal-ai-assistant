@@ -1,5 +1,5 @@
 from rag.retriever import retrieve
-from llm.gemini import ask_gemini
+from llm.manager import llm_manager
 
 def answer_question(
     question,
@@ -15,7 +15,7 @@ def answer_question(
 
     context = "\n".join(relevant_chunks)
 
-    answer = ask_gemini(
+    answer = llm_manager.generate(
         context,
         question
     )

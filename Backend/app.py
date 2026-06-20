@@ -1,13 +1,8 @@
 from fastapi import FastAPI, UploadFile, File, Form
 from ingestion.image_processor import extract_image_text
 from ingestion.pdf_processor import extract_text
-from llm.gemini import ask_gemini
 from rag.chunker import chunk_text
 from rag.embedder import create_embeddings
-from rag.retriever import retrieve
-from agents.qa_agent import answer_question
-from agents.summary_agent import summarize_document
-from agents.quiz_agent import generate_quiz
 from graph.workflow import graph
 from ingestion.audio_processor import extract_audio_text
 from ingestion.video_processor import extract_video_text
@@ -25,7 +20,7 @@ UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.post("/upload")
-async def upload_pdf(file: UploadFile = File(...)):
+async def upload_document(file: UploadFile = File(...)):
 
 
     file_path = os.path.join(

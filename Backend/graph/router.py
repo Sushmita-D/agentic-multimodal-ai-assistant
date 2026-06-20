@@ -1,4 +1,4 @@
-from llm.gemini import ask_gemini
+from llm.manager import llm_manager
 
 def detect_task(user_prompt):
 
@@ -11,6 +11,7 @@ Tasks:
 qa
 summary
 quiz
+notes
 
 Rules:
 
@@ -25,6 +26,11 @@ test,
 exam,
 quiz -> quiz
 
+If user asks to generate notes,
+study notes,
+make notes,
+prepare notes -> notes
+
 Reply ONLY with
 
 qa
@@ -37,11 +43,15 @@ or
 
 quiz
 
+or
+
+notes  
+
 User Request:
 
 {user_prompt}
 """
 
-    task = ask_gemini("", router_prompt)
+    task = llm_manager.generate("", router_prompt)
 
     return task.strip().lower()

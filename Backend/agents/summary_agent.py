@@ -1,4 +1,4 @@
-from llm.gemini import ask_gemini
+from llm.manager import llm_manager
 
 def summarize_document(document_text):
 
@@ -10,7 +10,7 @@ def summarize_document(document_text):
     - Important Concepts
     """
 
-    summary = ask_gemini(
+    summary = llm_manager.generate(
         document_text,
         question
     )

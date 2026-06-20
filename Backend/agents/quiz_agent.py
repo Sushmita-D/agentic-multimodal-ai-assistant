@@ -1,4 +1,4 @@
-from llm.gemini import ask_gemini
+from llm.manager import llm_manager
 
 def generate_quiz(document_text):
 
@@ -11,7 +11,7 @@ def generate_quiz(document_text):
     - Correct Answer
     """
 
-    quiz = ask_gemini(
+    quiz = llm_manager.generate(
         document_text,
         question
     )
