@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, Form
+from ingestion.image_processor import extract_image_text
 from ingestion.pdf_processor import extract_text
 from llm.gemini import ask_gemini
 from rag.chunker import chunk_text
@@ -63,7 +64,8 @@ async def upload_pdf(file: UploadFile = File(...)):
     ]:
 
         document_text = extract_video_text(file_path)
-
+    elif extension in [".jpg", ".jpeg", ".png", ".webp"]:
+        document_text = extract_image_text(file_path)
     else:
 
         return {

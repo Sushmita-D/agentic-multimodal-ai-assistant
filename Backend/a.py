@@ -1,7 +1,10 @@
-from ingestion.video_processor import extract_video_text
+from llm.providers.openai import OpenAIProvider
 
-text = extract_video_text(
-    "uploads/video.mkv"
+provider = OpenAIProvider()
+
+answer = provider.generate(
+    "Python is a programming language.",
+    "What is Python?"
 )
 
-print(text)
+print(answer)
