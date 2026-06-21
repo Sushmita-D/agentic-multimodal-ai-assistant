@@ -6,6 +6,12 @@ from rag.embedder import create_embeddings
 from graph.workflow import graph
 from ingestion.audio_processor import extract_audio_text
 from ingestion.video_processor import extract_video_text
+from fastapi.responses import FileResponse
+from generators.documents.export_manager import export_manager
+from agents.notes_agent import generate_notes
+from agents.summary_agent import summarize_document
+from agents.quiz_agent import generate_quiz
+from agents.flashcard_agent import generate_flashcards
 from document_store import (
     create_document,
     save_chunk,
@@ -123,3 +129,56 @@ async def agent(
         "task": result["task"],
         "response": result["result"]
     }
+@app.post("/export")
+async def export_document(
+    document_id: int = Form(...),
+    content_type: str = Form(...),
+    format: str = Form(...)
+):
+
+    document_chunks, document_embeddings = get_document_chunks(
+        document_id
+    )
+
+    document_text = "\n\n".join(document_chunks)
+
+    if content_type == "notes":
+
+        content = generate_notes(
+        document_text
+    )
+
+    elif content_type == "summary":
+
+        content = summarize_document(
+        document_text
+    )
+
+    elif content_type == "quiz":
+
+        content = generate_quiz(
+        document_text
+    )
+
+    elif content_type == "flashcards":
+
+        content = generate_flashcards(
+        document_text
+    )
+
+    else:
+
+        raise ValueError(
+        "Unsupported content type"
+    )
+
+    file_path = await export_manager.export(
+    format=format,
+    title="Study Materials",
+    content=content
+    )
+
+    return FileResponse(
+        file_path,
+        filename=f"Study_Notes.{format}"
+    )    

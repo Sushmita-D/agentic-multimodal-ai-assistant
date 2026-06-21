@@ -1,39 +1,52 @@
+# =========================
 # Python
+# =========================
 __pycache__/
 *.py[cod]
 *.pyo
 
+# =========================
 # Virtual Environment
+# =========================
 venv/
 .env
 
+# =========================
 # IDE
+# =========================
 .vscode/
 .idea/
 
+# =========================
 # Database
+# =========================
 *.db
 
+# =========================
 # Logs
+# =========================
 *.log
 
-# Uploads
+# =========================
+# Uploaded Files
+# =========================
 uploads/*
 !uploads/.gitkeep
 
+# =========================
 # Generated Files
-generated/*
-!generated/.gitkeep
+# =========================
+generators/outputs/*
+!generators/outputs/.gitkeep
 
-# Python cache
+# =========================
+# Python Cache
+# =========================
 .pytest_cache/
 .mypy_cache/
 
+# =========================
 # OS
+# =========================
 .DS_Store
 Thumbs.db
-Backend/uploads/*
-!Backend/uploads/.gitkeep
-
-Backend/generated/*
-!Backend/generated/.gitkeep

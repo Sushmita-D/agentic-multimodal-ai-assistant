@@ -1,4 +1,5 @@
 import os
+
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 
@@ -14,4 +15,34 @@ def generate_pdf(
     title: str,
     content: str
 ):
-    pass
+
+    file_path = os.path.join(
+        OUTPUT_FOLDER,
+        "Study_Notes.pdf"
+    )
+
+    styles = getSampleStyleSheet()
+
+    document = SimpleDocTemplate(
+        file_path
+    )
+
+    story = []
+
+    story.append(
+        Paragraph(
+            title,
+            styles["Heading1"]
+        )
+    )
+
+    story.append(
+        Paragraph(
+            content.replace("\n", "<br/>"),
+            styles["BodyText"]
+        )
+    )
+
+    document.build(story)
+
+    return file_path
