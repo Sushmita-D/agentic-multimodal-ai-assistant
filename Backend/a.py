@@ -1,16 +1,19 @@
-from generators.documents.pdf_generator import generate_pdf
+from agents.storyboard_agent import generate_storyboard
+from agents.teacher_agent import generate_teaching_script
+from agents.slide_agent import generate_slides
 
-generate_pdf(
-    "Python Notes",
-    """
+document = """
 Python is a programming language.
 
-It is used for AI.
+It supports object-oriented programming.
 
-It supports OOP.
-
-It is easy to learn.
+Python is used in AI.
 """
-)
 
-print("PDF Created Successfully")
+script = generate_teaching_script(document)
+
+storyboard = generate_storyboard(script)
+
+slides = generate_slides(storyboard)
+
+print(slides)

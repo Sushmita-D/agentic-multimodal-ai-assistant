@@ -1,7 +1,7 @@
 from generators.documents.pdf_generator import generate_pdf
 from generators.documents.docx_generator import generate_docx
 from generators.documents.audio_generator import generate_audio
-
+from generators.video.video_generator import generate_video
 
 class ExportManager:
 
@@ -29,6 +29,16 @@ class ExportManager:
                 title,
                 content
             )
+        elif format == "video":
+
+            await generate_audio(
+            title,
+            content
+            )
+
+            return generate_video(
+                title
+            )    
 
         raise ValueError(
             f"Unsupported format: {format}"

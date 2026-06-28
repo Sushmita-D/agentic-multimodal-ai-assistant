@@ -1,19 +1,23 @@
 from rag.retriever import retrieve
 from llm.manager import llm_manager
 
+
 def answer_question(
     question,
     document_chunks,
     document_embeddings
 ):
 
-    relevant_chunks = retrieve(
+    retrieved_chunks = retrieve(
         question,
         document_chunks,
         document_embeddings
     )
 
-    context = "\n".join(relevant_chunks)
+    context = "\n\n".join(
+        item["chunk"]
+        for item in retrieved_chunks
+    )
 
     answer = llm_manager.generate(
         context,

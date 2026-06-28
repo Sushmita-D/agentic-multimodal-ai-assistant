@@ -1,3 +1,4 @@
+print("Gemini provider imported")
 import os
 
 import google.generativeai as genai

@@ -1,6 +1,6 @@
 import psycopg2
 from database import get_connection
-import numpy as np
+from rag.embedder import model
 
 
 def create_document(filename, file_type):
@@ -30,13 +30,68 @@ def create_document(filename, file_type):
     return document_id
 
 
-def save_chunk(document_id, chunk_number, chunk_text, embedding):
-    """
-    Saves a chunk belonging to a document.
-    """
+def retrieve_chunks(
+    document_id: int,
+    question: str,
+    top_k: int = 5
+):
 
     conn = get_connection()
     cursor = conn.cursor()
+
+    query_embedding = model.encode(question)
+
+    vector = "[" + ",".join(
+        map(str, query_embedding.tolist())
+    ) + "]"
+
+    cursor.execute(
+        """
+        SELECT
+            chunk_text,
+            1 - (embedding <=> %s::vector) AS similarity
+        FROM document_chunks
+        WHERE document_id = %s
+        ORDER BY embedding <=> %s::vector
+        LIMIT %s;
+        """,
+        (
+            vector,
+            document_id,
+            vector,
+            top_k
+        )
+    )
+
+    rows = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    print("\n========== PGVECTOR RESULTS ==========\n")
+
+    results = []
+
+    for chunk, score in rows:
+
+        print(f"Score : {score:.4f}")
+        print(chunk[:150])
+        print("-" * 60)
+
+        results.append(
+            {
+                "chunk": chunk,
+                "score": score
+            }
+        )
+
+    return results
+def save_chunk(document_id, chunk_number, chunk_text, embedding):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    vector = "[" + ",".join(map(str, embedding.tolist())) + "]"
 
     cursor.execute(
         """
@@ -47,13 +102,13 @@ def save_chunk(document_id, chunk_number, chunk_text, embedding):
             chunk_text,
             embedding
         )
-        VALUES (%s, %s, %s, %s)
+        VALUES (%s,%s,%s,%s)
         """,
         (
             document_id,
             chunk_number,
             chunk_text,
-            embedding.tolist()
+            vector
         )
     )
 
