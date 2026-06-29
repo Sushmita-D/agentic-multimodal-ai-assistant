@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+.env
+
+# Git
+.git
+.gitignore
+
+# VS Code
+.vscode/
+
+# Python cache
+.pytest_cache/
+
+# Uploaded Files
+uploads/
+
+# Generated Outputs
+generators/outputs/
+
+# Logs
+*.log
+
+# OS Files
+.DS_Store
+Thumbs.db
