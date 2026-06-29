@@ -1,7 +1,7 @@
 import psycopg2
 from database import get_connection
 from rag.embedder import model
-
+import numpy as np
 
 def create_document(filename, file_type):
     """

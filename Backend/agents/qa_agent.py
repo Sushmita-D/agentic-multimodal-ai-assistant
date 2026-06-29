@@ -1,17 +1,12 @@
-from rag.retriever import retrieve
+from rag.pgvector_retriever import retrieve
 from llm.manager import llm_manager
 
 
-def answer_question(
-    question,
-    document_chunks,
-    document_embeddings
-):
+def answer_question(question, document_id):
 
     retrieved_chunks = retrieve(
-        question,
-        document_chunks,
-        document_embeddings
+        document_id,
+        question
     )
 
     context = "\n\n".join(

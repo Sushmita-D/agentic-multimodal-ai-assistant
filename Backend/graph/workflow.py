@@ -13,8 +13,8 @@ from agents.flashcard_agent import generate_flashcards
 class AgentState(TypedDict):
     question: str
     task: str
+    document_id: int
     document_chunks: List[str]
-    document_embeddings: Any
     result: str
 
 
@@ -38,10 +38,9 @@ def router_node(state: AgentState):
 def qa_node(state: AgentState):
 
     answer = answer_question(
-        state["question"],
-        state["document_chunks"],
-        state["document_embeddings"]
-    )
+    state["question"],
+    state["document_id"]
+)
 
     state["result"] = answer
 

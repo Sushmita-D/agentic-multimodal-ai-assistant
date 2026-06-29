@@ -110,15 +110,17 @@ async def agent(
     question: str = Form(...)
 ):
 
-    document_chunks, document_embeddings = get_document_chunks(
+    # We still load chunks because Summary, Notes, Quiz,
+    # and Flashcards need the full document.
+    document_chunks, _ = get_document_chunks(
         document_id
     )
 
     state = {
+        "document_id": document_id,
         "question": question,
         "task": "",
         "document_chunks": document_chunks,
-        "document_embeddings": document_embeddings,
         "result": ""
     }
 
