@@ -17,3 +17,7 @@ OPENAI_MODEL = "gpt-4o-mini"
 
 # Ollama
 OLLAMA_MODEL = "qwen3:4b"
+OLLAMA_HOST = os.getenv(
+    "OLLAMA_HOST",
+    "http://host.docker.internal:11434"
+)

@@ -1,9 +1,12 @@
 print("Ollama provider imported")
 
-from ollama import chat
+from ollama import Client
 
 from llm.base import BaseLLM
-from llm.config import OLLAMA_MODEL
+from llm.config import (
+    OLLAMA_MODEL,
+    OLLAMA_HOST
+)
 
 
 class OllamaProvider(BaseLLM):
@@ -26,7 +29,9 @@ Answer:
 
         print("Step 2 - Prompt created")
 
-        response = chat(
+        client = Client(host=OLLAMA_HOST)
+
+        response = client.chat(
             model=OLLAMA_MODEL,
             messages=[
                 {
