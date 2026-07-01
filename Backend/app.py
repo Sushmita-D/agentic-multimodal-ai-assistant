@@ -28,7 +28,6 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 @app.post("/upload")
 async def upload_document(file: UploadFile = File(...)):
 
-
     file_path = os.path.join(
         UPLOAD_FOLDER,
         file.filename
@@ -37,16 +36,50 @@ async def upload_document(file: UploadFile = File(...)):
     with open(file_path, "wb") as f:
         f.write(await file.read())
 
+    extension = os.path.splitext(file.filename)[1].lower()
+
     document_id = create_document(
         file.filename,
-        "pdf"
+        extension.replace(".", "")
     )
 
-    extension = os.path.splitext(file.filename)[1].lower()
+    total_characters = 0
+    total_chunks = 0
+    chunk_number = 1
+
+    # ---------------- PDF ----------------
 
     if extension == ".pdf":
 
-        document_text = extract_text(file_path)
+        pages = extract_text(file_path)
+
+        for page in pages:
+
+            page_number = page["page"]
+            page_text = page["text"]
+
+            total_characters += len(page_text)
+
+            page_chunks = chunk_text(page_text)
+
+            page_embeddings = create_embeddings(
+                page_chunks
+            )
+
+            for i, chunk in enumerate(page_chunks):
+
+                save_chunk(
+                    document_id,
+                    chunk_number,
+                    page_number,
+                    chunk,
+                    page_embeddings[i]
+                )
+
+                chunk_number += 1
+                total_chunks += 1
+
+    # ---------------- Audio ----------------
 
     elif extension in [
         ".mp3",
@@ -57,6 +90,27 @@ async def upload_document(file: UploadFile = File(...)):
 
         document_text = extract_audio_text(file_path)
 
+        total_characters = len(document_text)
+
+        chunks = chunk_text(document_text)
+
+        embeddings = create_embeddings(chunks)
+
+        for i, chunk in enumerate(chunks):
+
+            save_chunk(
+                document_id,
+                chunk_number,
+                1,
+                chunk,
+                embeddings[i]
+            )
+
+            chunk_number += 1
+            total_chunks += 1
+
+    # ---------------- Video ----------------
+
     elif extension in [
         ".mp4",
         ".mov",
@@ -65,42 +119,69 @@ async def upload_document(file: UploadFile = File(...)):
     ]:
 
         document_text = extract_video_text(file_path)
-    elif extension in [".jpg", ".jpeg", ".png", ".webp"]:
+
+        total_characters = len(document_text)
+
+        chunks = chunk_text(document_text)
+
+        embeddings = create_embeddings(chunks)
+
+        for i, chunk in enumerate(chunks):
+
+            save_chunk(
+                document_id,
+                chunk_number,
+                1,
+                chunk,
+                embeddings[i]
+            )
+
+            chunk_number += 1
+            total_chunks += 1
+
+    # ---------------- Image ----------------
+
+    elif extension in [
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".webp"
+    ]:
+
         document_text = extract_image_text(file_path)
+
+        total_characters = len(document_text)
+
+        chunks = chunk_text(document_text)
+
+        embeddings = create_embeddings(chunks)
+
+        for i, chunk in enumerate(chunks):
+
+            save_chunk(
+                document_id,
+                chunk_number,
+                1,
+                chunk,
+                embeddings[i]
+            )
+
+            chunk_number += 1
+            total_chunks += 1
+
     else:
 
         return {
-        "error": "Unsupported file type"
+            "error": "Unsupported file type"
         }
-
-    document_chunks = chunk_text(document_text)
-
-    document_embeddings = create_embeddings(
-        document_chunks
-    )
-
-    for i, chunk in enumerate(document_chunks):
-        save_chunk(
-            document_id,
-            i + 1,
-            chunk,
-            document_embeddings[i]
-        )
-
-    print("TEXT START")
-    print(document_text[:500])
-    print("TEXT END")
-    print("Chunks:", len(document_chunks))
-    print("Embeddings Shape:", document_embeddings.shape)
-    print("LENGTH =", len(document_text))
 
     return {
         "message": "File uploaded successfully",
         "document_id": document_id,
         "filename": file.filename,
         "file_type": extension,
-        "characters": len(document_text),
-        "chunks": len(document_chunks)
+        "characters": total_characters,
+        "chunks": total_chunks
     }
 
 

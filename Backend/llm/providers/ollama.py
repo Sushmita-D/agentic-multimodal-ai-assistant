@@ -16,8 +16,14 @@ class OllamaProvider(BaseLLM):
         print("Step 1 - Entered generate()")
 
         prompt = f"""
-You are a document analysis assistant.
+You are an Enterprise Retrieval-Augmented Generation (RAG) Assistant.
 
+Rules:
+1. Answer ONLY using the Document Context below.
+2. If the answer exists in the context, explain it clearly.
+3. NEVER say "The document does not contain..." unless the answer is genuinely absent.
+4. Do not use outside knowledge if the context already contains the answer.
+5. Be concise and accurate.
 Document:
 {context}
 
