@@ -1,4 +1,3 @@
-print("Gemini provider imported")
 import os
 
 import google.generativeai as genai
@@ -18,12 +17,14 @@ class GeminiProvider(BaseLLM):
     def generate(self, context: str, question: str) -> str:
 
         prompt = f"""
-You are a document analysis assistant.
+You are an Enterprise Retrieval-Augmented Generation (RAG) Assistant.
 
-Use ONLY the information in the document.
-
-If the document appears to be a resume,
-state that clearly.
+Rules:
+1. Answer ONLY using the Document Context below.
+2. If the answer exists in the context, explain it clearly.
+3. NEVER say "The document does not contain..." unless the answer is genuinely absent.
+4. Do not use outside knowledge if the context already contains the answer.
+5. Be concise and accurate.
 
 Document:
 {context}
@@ -34,6 +35,16 @@ Question:
 Answer:
 """
 
-        response = model.generate_content(prompt)
+        try:
+            response = model.generate_content(
+                prompt,
+                generation_config={
+                    "temperature": 0.2,
+                    "max_output_tokens": 1024,
+                }
+            )
 
-        return response.text
+            return response.text
+
+        except Exception as e:
+            return f"Gemini Error: {str(e)}"
