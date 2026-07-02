@@ -14,6 +14,7 @@ class AgentState(TypedDict):
     question: str
     task: str
     document_id: int
+    history: List[Any]
     document_chunks: List[str]
     result: str
 
@@ -24,7 +25,7 @@ class AgentState(TypedDict):
 
 def router_node(state: AgentState):
 
-    task = detect_task(state["question"])
+    task = detect_task(state["question"], state["history"])
 
     state["task"] = task
 
@@ -39,7 +40,8 @@ def qa_node(state: AgentState):
 
     answer = answer_question(
     state["question"],
-    state["document_id"]
+    state["document_id"],
+    state["history"]
 )
 
     state["result"] = answer

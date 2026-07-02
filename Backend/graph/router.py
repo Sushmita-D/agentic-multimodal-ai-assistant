@@ -1,67 +1,69 @@
 from llm.manager import llm_manager
 
-def detect_task(user_prompt):
+def detect_task(user_prompt, history):
+
+    conversation = ""
+
+    for item in history:
+        conversation += (
+            f"{item['role'].capitalize()}: "
+            f"{item['message']}\n"
+        )
 
     router_prompt = f"""
 You are an AI Router.
 
-Choose ONLY one task.
+Your job is to classify the user's request into EXACTLY ONE task.
 
-Tasks:
+Available Tasks:
+- qa
+- summary
+- quiz
+- notes
+- flashcards
+
+Rules:
+
+1. If the current request is a follow-up question about a previous answer,
+choose qa.
+
+2. If the user asks any question about the document,
+choose qa.
+
+3. If the user asks for a summary or overview of the entire document,
+choose summary.
+
+4. If the user asks to generate a quiz, MCQs, test, or exam questions,
+choose quiz.
+
+5. If the user asks to generate notes or study notes,
+choose notes.
+
+6. If the user asks to generate flashcards, study cards, or revision cards,
+choose flashcards.
+
+Conversation History:
+---------------------
+{conversation}
+
+Current User Request:
+---------------------
+{user_prompt}
+
+Reply with ONLY ONE WORD:
+
 qa
 summary
 quiz
 notes
 flashcards
-
-Rules:
-
-If user asks a question about the document -> qa
-
-If user asks to summarize
-or explain briefly -> summary
-
-If user asks to generate questions,
-MCQs,
-test,
-exam,
-quiz -> quiz
-
-If user asks to generate notes,
-study notes,
-make notes,
-prepare notes -> notes
-
-If user asks to generate flashcards,
-study cards,
-revision cards,
-Q&A cards -> flashcards
-
-Reply ONLY with
-
-qa
-
-or
-
-summary
-
-or
-
-quiz
-
-or
-
-notes  
-
-or 
-
-flashcards
-
-User Request:
-
-{user_prompt}
 """
 
     task = llm_manager.generate("", router_prompt)
+
+    print("\n========== ROUTER ==========")
+    print("Question:", user_prompt)
+    print("Task:", task)
+    print("============================\n")
 
     return task.strip().lower()

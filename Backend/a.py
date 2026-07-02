@@ -1,19 +1,18 @@
-from agents.storyboard_agent import generate_storyboard
-from agents.teacher_agent import generate_teaching_script
-from agents.slide_agent import generate_slides
+from conversation_store import (
+    save_message,
+    load_history
+)
 
-document = """
-Python is a programming language.
+save_message(
+    11,
+    "user",
+    "What is Bubble Sort?"
+)
 
-It supports object-oriented programming.
+save_message(
+    11,
+    "assistant",
+    "Bubble Sort is a sorting algorithm."
+)
 
-Python is used in AI.
-"""
-
-script = generate_teaching_script(document)
-
-storyboard = generate_storyboard(script)
-
-slides = generate_slides(storyboard)
-
-print(slides)
+print(load_history(11))

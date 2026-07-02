@@ -17,7 +17,10 @@ from document_store import (
     save_chunk,
     get_document_chunks
 )
-
+from conversation_store import (
+    save_message,
+    load_history
+)
 import os
 
 app = FastAPI()
@@ -197,16 +200,29 @@ async def agent(
         document_id
     )
 
+    history = load_history(document_id)
+
     state = {
-        "document_id": document_id,
-        "question": question,
-        "task": "",
-        "document_chunks": document_chunks,
-        "result": ""
+    "document_id": document_id,
+    "question": question,
+    "history": history,
+    "task": "",
+    "document_chunks": document_chunks,
+    "result": ""
     }
 
     result = graph.invoke(state)
+    save_message(
+    document_id,
+    "user",
+    question
+    )
 
+    save_message(
+    document_id,
+    "assistant",
+    result["result"]
+    )
     return {
         "document_id": document_id,
         "task": result["task"],
