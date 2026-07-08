@@ -6,8 +6,8 @@ from ingestion.audio_processor import extract_audio_text
 
 def extract_video_text(video_path):
     """
-    Extracts audio from a video using FFmpeg
-    and converts it to text using Faster Whisper.
+    Extract audio from video using FFmpeg
+    and transcribe it using Faster Whisper.
     """
 
     audio_path = "uploads/temp_audio.wav"
@@ -30,7 +30,8 @@ def extract_video_text(video_path):
     subprocess.run(
         command,
         stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL
+        stderr=subprocess.DEVNULL,
+        check=True
     )
 
     transcript = extract_audio_text(audio_path)

@@ -1,17 +1,27 @@
 from faster_whisper import WhisperModel
 
-# Load model only once when the application starts
-model = WhisperModel(
-    "base",
-    device="cpu",
-    compute_type="int8"
-)
+_model = None
+
+
+def get_model():
+    global _model
+
+    if _model is None:
+        _model = WhisperModel(
+            "base",
+            device="cpu",
+            compute_type="int8"
+        )
+
+    return _model
 
 
 def extract_audio_text(audio_path):
     """
     Converts speech to text using Faster Whisper.
     """
+
+    model = get_model()
 
     segments, info = model.transcribe(
         audio_path,
