@@ -4,6 +4,7 @@ from ingestion.pdf_processor import extract_text
 from rag.chunker import chunk_text
 from rag.embedder import create_embeddings
 from graph.workflow import graph
+from fastapi.middleware.cors import CORSMiddleware
 from ingestion.audio_processor import extract_audio_text
 from ingestion.video_processor import extract_video_text
 from fastapi.responses import FileResponse
@@ -11,6 +12,7 @@ from generators.documents.export_manager import export_manager
 from agents.notes_agent import generate_notes
 from agents.summary_agent import summarize_document
 from agents.quiz_agent import generate_quiz
+from document_service import get_all_documents
 from agents.flashcard_agent import generate_flashcards
 from document_store import (
     create_document,
@@ -24,6 +26,15 @@ from conversation_store import (
 import os
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -59,7 +70,10 @@ async def upload_document(file: UploadFile = File(...)):
         for page in pages:
 
             page_number = page["page"]
-            page_text = page["text"]
+            page_text = page["text"].strip()
+            # Skip empty or nearly empty pages
+            if len(page_text) < 30:
+                continue
 
             total_characters += len(page_text)
 
@@ -281,3 +295,31 @@ async def export_document(
         file_path,
         filename=f"Study_Notes.{format}"
     )    
+@app.get("/documents")
+async def documents():
+
+    rows = get_all_documents()
+
+    result = []
+
+    for row in rows:
+
+        result.append(
+    {
+        "id": row[0],
+        "filename": row[1],
+        "file_type": row[2],
+        "uploaded_at": str(row[3])
+    }
+)
+
+    return result
+@app.get("/history/{document_id}")
+async def get_history(document_id: int):
+
+    history = load_history(document_id)
+
+    return {
+        "document_id": document_id,
+        "history": history
+    }

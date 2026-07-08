@@ -1,50 +1,30 @@
-# ==========================
 # Python
-# ==========================
 __pycache__/
 *.py[cod]
 *.pyo
 
-# ==========================
 # Virtual Environment
-# ==========================
 venv/
-.env
 
-# ==========================
+# Environment Variables
+.env
+*.env
+
+# Uploads
+Backend/uploads/
+
+# Generated Files
+Backend/generators/outputs/
+
+# Frontend
+frontend/node_modules/
+frontend/.vite/
+frontend/dist/
+
 # IDE
-# ==========================
 .vscode/
 .idea/
 
-# ==========================
-# Logs
-# ==========================
-*.log
-
-# ==========================
-# Database
-# ==========================
-*.db
-
-# ==========================
-# Runtime Generated Files
-# ==========================
-
-Backend/uploads/*
-!Backend/uploads/.gitkeep
-
-Backend/generators/outputs/*
-!Backend/generators/outputs/.gitkeep
-
-# ==========================
-# Cache
-# ==========================
-.pytest_cache/
-.mypy_cache/
-
-# ==========================
 # OS
-# ==========================
 .DS_Store
 Thumbs.db

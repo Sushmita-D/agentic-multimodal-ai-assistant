@@ -1,4 +1,8 @@
-print("Ollama provider imported")
+import logging
+
+logger = logging.getLogger(__name__)
+
+logger.info("Ollama provider initialized")
 
 from ollama import Client
 
@@ -13,8 +17,6 @@ class OllamaProvider(BaseLLM):
 
     def generate(self, context: str, question: str) -> str:
 
-        print("Step 1 - Entered generate()")
-
         prompt = f"""
 You are an Enterprise Retrieval-Augmented Generation (RAG) Assistant.
 
@@ -24,6 +26,7 @@ Rules:
 3. NEVER say "The document does not contain..." unless the answer is genuinely absent.
 4. Do not use outside knowledge if the context already contains the answer.
 5. Be concise and accurate.
+
 Document:
 {context}
 
@@ -33,20 +36,24 @@ Question:
 Answer:
 """
 
-        print("Step 2 - Prompt created")
+        try:
 
-        client = Client(host=OLLAMA_HOST)
+            client = Client(host=OLLAMA_HOST)
 
-        response = client.chat(
-            model=OLLAMA_MODEL,
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
-        )
+            response = client.chat(
+                model=OLLAMA_MODEL,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ]
+            )
 
-        print("Step 3 - Got response from Ollama")
+            return response["message"]["content"]
 
-        return response["message"]["content"]
+        except Exception as e:
+
+            print("Ollama Error:", e)
+
+            return "Unable to connect to Ollama. Please try again later."

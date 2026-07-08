@@ -1,0 +1,6 @@
+{
+  "name": "Lumina AI",
+  "description": "An Agentic Multimodal AI Learning Assistant. Learn Anything. Understand Everything.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -40,11 +40,12 @@ Answer:
                 prompt,
                 generation_config={
                     "temperature": 0.2,
-                    "max_output_tokens": 1024,
+                    "max_output_tokens": 4096,
                 }
             )
 
             return response.text
 
         except Exception as e:
-            return f"Gemini Error: {str(e)}"
+            print("Gemini Error:", e)
+            return "The AI service is temporarily unavailable. Please try again later."

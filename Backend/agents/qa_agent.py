@@ -3,11 +3,13 @@ from llm.manager import llm_manager
 
 
 def answer_question(question, document_id, history):
-
+    
     retrieved_chunks = hybrid_search(
         document_id,
         question
     )
+    if not retrieved_chunks:
+        return "I couldn't find relevant information in this document."
 
     context = "\n\n".join(
         item["chunk"]
@@ -45,15 +47,15 @@ def answer_question(question, document_id, history):
     question
     )
 
-    citations = "\n\nSources\n"
-    citations += "-------------------------\n"
+    pages = sorted(
+    set(item["page_number"] for item in retrieved_chunks)
+    )
 
-    for item in retrieved_chunks:
+    sources = "\n\n📖 Sources: "
 
-        citations += (
-            f"Page {item['page_number']} | "
-            f"Chunk {item['chunk_number']} | "
-            f"Similarity {item['score']:.2f}\n"
-        )
+    sources += ", ".join(
+        f"Page {page}"
+        for page in pages
+    )
 
-    return answer + citations
+    return answer + sources

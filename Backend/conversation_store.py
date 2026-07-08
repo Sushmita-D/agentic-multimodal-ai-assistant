@@ -1,14 +1,19 @@
+import json
+
 from database import get_connection
 
 
 def save_message(
     document_id: int,
     role: str,
-    message: str
+    message
 ):
-
     conn = get_connection()
     cursor = conn.cursor()
+
+    # Convert list/dict to JSON string
+    if not isinstance(message, str):
+        message = json.dumps(message, ensure_ascii=False)
 
     cursor.execute(
         """

@@ -1,3 +1,5 @@
+from langgraph.func import task
+
 from llm.manager import llm_manager
 
 def detect_task(user_prompt, history):
@@ -61,9 +63,18 @@ flashcards
 
     task = llm_manager.generate("", router_prompt)
 
-    print("\n========== ROUTER ==========")
-    print("Question:", user_prompt)
-    print("Task:", task)
-    print("============================\n")
+    task = task.strip().lower()
 
-    return task.strip().lower()
+    allowed = [
+        "qa",
+        "summary",
+        "quiz",
+        "notes",
+        "flashcards"
+        ]
+
+    if task not in allowed:
+        print(f"Invalid task from LLM: {task}")
+        return "qa"
+
+    return task

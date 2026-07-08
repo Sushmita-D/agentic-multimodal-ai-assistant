@@ -1,7 +1,9 @@
+from multiprocessing import context
 from typing import TypedDict, List, Any
 
 from langgraph.graph import StateGraph, END
 
+from rag.hybrid_retriever import hybrid_search
 from graph.router import detect_task
 from agents.qa_agent import answer_question
 from agents.summary_agent import summarize_document
@@ -72,11 +74,16 @@ def summary_node(state: AgentState):
 
 def quiz_node(state: AgentState):
 
-    document_text = "\n\n".join(state["document_chunks"])
+    context = hybrid_search(
+    state["document_id"],
+    "Generate quiz from this document"
+    )
 
-    quiz = generate_quiz(
-        document_text
-)
+    document_text = "\n\n".join(
+    item["chunk"] for item in context
+    )
+
+    quiz = generate_quiz(document_text)
 
     state["result"] = quiz
 

@@ -9,17 +9,6 @@ ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 # LLM Provider
 DEFAULT_PROVIDER = os.getenv("DEFAULT_PROVIDER", "gemini")
 
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-# Environment
-ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
-
-# LLM Provider
-DEFAULT_PROVIDER = os.getenv("DEFAULT_PROVIDER", "gemini")
-
 GEMINI_MODEL = os.getenv(
     "GEMINI_MODEL",
     "gemini-2.5-flash"
