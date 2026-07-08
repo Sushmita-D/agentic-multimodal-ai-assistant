@@ -25,5 +25,5 @@ OLLAMA_MODEL = os.getenv(
 )
 OLLAMA_HOST = os.getenv(
     "OLLAMA_HOST",
-    "http://host.docker.internal:11434"
+    " "
 )
