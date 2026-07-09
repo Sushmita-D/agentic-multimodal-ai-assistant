@@ -42,6 +42,8 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 @app.post("/upload")
 async def upload_document(file: UploadFile = File(...)):
 
+    print("1. Upload started")
+
     file_path = os.path.join(
         UPLOAD_FOLDER,
         file.filename
@@ -50,12 +52,18 @@ async def upload_document(file: UploadFile = File(...)):
     with open(file_path, "wb") as f:
         f.write(await file.read())
 
+    print("2. File saved")
+
     extension = os.path.splitext(file.filename)[1].lower()
+
+    print("3. Creating document...")
 
     document_id = create_document(
         file.filename,
         extension.replace(".", "")
     )
+
+    print("4. Document created")
 
     total_characters = 0
     total_chunks = 0
@@ -65,25 +73,37 @@ async def upload_document(file: UploadFile = File(...)):
 
     if extension == ".pdf":
 
+        print("5. Extracting PDF")
+
         pages = extract_text(file_path)
+
+        print("6. PDF extracted")
 
         for page in pages:
 
+            print(f"7. Processing page {page['page']}")
+
             page_number = page["page"]
             page_text = page["text"].strip()
-            # Skip empty or nearly empty pages
+
             if len(page_text) < 30:
                 continue
 
             total_characters += len(page_text)
 
+            print("8. Chunking")
+
             page_chunks = chunk_text(page_text)
 
-            page_embeddings = create_embeddings(
-                page_chunks
-            )
+            print("9. Creating embeddings")
+
+            page_embeddings = create_embeddings(page_chunks)
+
+            print("10. Embeddings created")
 
             for i, chunk in enumerate(page_chunks):
+
+                print(f"Saving chunk {i+1}")
 
                 save_chunk(
                     document_id,
@@ -95,6 +115,10 @@ async def upload_document(file: UploadFile = File(...)):
 
                 chunk_number += 1
                 total_chunks += 1
+
+            print("11. Chunks saved")
+
+            print("12. Upload completed")
 
     # ---------------- Audio ----------------
 
