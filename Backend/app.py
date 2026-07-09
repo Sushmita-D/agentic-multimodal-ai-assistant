@@ -347,3 +347,34 @@ async def get_history(document_id: int):
         "document_id": document_id,
         "history": history
     }
+    from database import get_connection
+
+@app.get("/db-test")
+def db_test():
+    try:
+        print("Connecting...")
+
+        conn = get_connection()
+
+        print("Connected!")
+
+        cur = conn.cursor()
+
+        cur.execute("SELECT NOW();")
+
+        result = cur.fetchone()
+
+        cur.close()
+        conn.close()
+
+        return {
+            "status": "success",
+            "time": str(result[0])
+        }
+
+    except Exception as e:
+        print("DATABASE ERROR:", str(e))
+        return {
+            "status": "error",
+            "message": str(e)
+        } 
