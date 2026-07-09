@@ -14,6 +14,7 @@ from agents.summary_agent import summarize_document
 from agents.quiz_agent import generate_quiz
 from document_service import get_all_documents
 from agents.flashcard_agent import generate_flashcards
+from database import get_connection
 from document_store import (
     create_document,
     save_chunk,
@@ -347,7 +348,6 @@ async def get_history(document_id: int):
         "document_id": document_id,
         "history": history
     }
-    from database import get_connection
 
 @app.get("/db-test")
 def db_test():
