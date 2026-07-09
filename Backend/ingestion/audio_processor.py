@@ -1,12 +1,11 @@
-from faster_whisper import WhisperModel
-
 _model = None
-
 
 def get_model():
     global _model
 
     if _model is None:
+        from faster_whisper import WhisperModel
+
         _model = WhisperModel(
             "base",
             device="cpu",
@@ -17,10 +16,6 @@ def get_model():
 
 
 def extract_audio_text(audio_path):
-    """
-    Converts speech to text using Faster Whisper.
-    """
-
     model = get_model()
 
     segments, info = model.transcribe(
