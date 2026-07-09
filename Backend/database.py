@@ -11,6 +11,5 @@ def get_connection():
     database=os.getenv("DATABASE_NAME"),
     user=os.getenv("DATABASE_USER"),
     password=os.getenv("DATABASE_PASSWORD"),
-    sslmode="require",
-    connect_timeout=10
+    sslmode="require"
 )
