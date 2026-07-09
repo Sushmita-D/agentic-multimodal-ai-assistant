@@ -351,12 +351,15 @@ async def get_history(document_id: int):
 
 @app.get("/dbtest")
 def dbtest():
-    import psycopg2
     import os
+    import psycopg2
 
     try:
         print("HOST:", os.getenv("DATABASE_HOST"))
         print("PORT:", os.getenv("DATABASE_PORT"))
+        print("DB:", os.getenv("DATABASE_NAME"))
+        print("USER:", os.getenv("DATABASE_USER"))
+        print("PASSWORD EXISTS:", bool(os.getenv("DATABASE_PASSWORD")))
 
         conn = psycopg2.connect(
             host=os.getenv("DATABASE_HOST"),
@@ -365,24 +368,16 @@ def dbtest():
             user=os.getenv("DATABASE_USER"),
             password=os.getenv("DATABASE_PASSWORD"),
             sslmode="require",
-            connect_timeout=10
+            connect_timeout=10,
         )
 
         cur = conn.cursor()
-        cur.execute("SELECT version();")
-        version = cur.fetchone()
-
+        cur.execute("SELECT 1")
         cur.close()
         conn.close()
 
-        return {
-            "status": "connected",
-            "version": version
-        }
+        return {"status": "connected"}
 
     except Exception as e:
-        print(e)
-        return {
-            "status": "error",
-            "message": str(e)
-        }
+        print("DB ERROR:", repr(e))
+        return {"status": "error", "message": str(e)}
