@@ -1,29 +1,23 @@
-print("1 Upload started")
-
-print("2 File saved")
-
-print("3 Creating document")
-
-print("4 PDF extraction")
-
-print("5 Chunking")
-
-print("6 Creating embeddings")
-
-print("7 Saving chunks")
-
-print("8 Upload completed")
 from sentence_transformers import SentenceTransformer
 import time
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
-def create_embeddings(chunks):
+def create_embeddings(
+    chunks,
+    batch_size=32,
+    show_progress_bar=False
+):
     print("Embedding started")
+
     start = time.time()
 
-    embeddings = model.encode(chunks)
+    embeddings = model.encode(
+        chunks,
+        batch_size=batch_size,
+        show_progress_bar=show_progress_bar
+    )
 
-    print(f"Embedding finished in {time.time()-start:.2f} sec")
+    print(f"Embedding finished in {time.time() - start:.2f} sec")
 
     return embeddings

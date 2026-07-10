@@ -14,7 +14,6 @@ from agents.summary_agent import summarize_document
 from agents.quiz_agent import generate_quiz
 from document_service import get_all_documents
 from agents.flashcard_agent import generate_flashcards
-from database import get_connection
 from document_store import (
     create_document,
     save_chunk,
@@ -81,9 +80,12 @@ async def upload_document(file: UploadFile = File(...)):
 
         print("6. PDF extracted")
 
+        all_chunks = []
+        all_page_numbers = []
+
         for page in pages:
 
-            print(f"7. Processing page {page['page']}")
+            print(f"Processing page {page['page']}")
 
             page_number = page["page"]
             page_text = page["text"].strip()
@@ -93,35 +95,42 @@ async def upload_document(file: UploadFile = File(...)):
 
             total_characters += len(page_text)
 
-            print("8. Chunking")
+            chunks = chunk_text(page_text)
 
-            page_chunks = chunk_text(page_text)
+            for chunk in chunks:
+                all_chunks.append(chunk)
+                all_page_numbers.append(page_number)
 
-            print("9. Creating embeddings")
+        print("7. Total Chunks:", len(all_chunks))
 
-            page_embeddings = create_embeddings(page_chunks)
+        print("8. Creating ALL embeddings...")
 
-            print("10. Embeddings created")
+        all_embeddings = create_embeddings(all_chunks)
 
-            for i, chunk in enumerate(page_chunks):
+        print("9. Embeddings created")
 
-                print(f"Saving chunk {i+1}")
+        for chunk, embedding, page_number in zip(
+            all_chunks,
+            all_embeddings,
+            all_page_numbers
+        ):
 
-                save_chunk(
-                    document_id,
-                    chunk_number,
-                    page_number,
-                    chunk,
-                    page_embeddings[i]
-                )
+            if chunk_number % 20 == 0:
+                print(f"Saved {chunk_number} chunks...")
 
-                chunk_number += 1
-                total_chunks += 1
+            save_chunk(
+                document_id=document_id,
+                chunk_number=chunk_number,
+                page_number=page_number,
+                chunk_text=chunk,
+                embedding=embedding
+            )
 
-            print("11. Chunks saved")
+            chunk_number += 1
+            total_chunks += 1
 
-            print("12. Upload completed")
-
+        print("10. Upload completed")
+    
     # ---------------- Audio ----------------
 
     elif extension in [
